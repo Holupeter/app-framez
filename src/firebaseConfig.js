@@ -10,7 +10,7 @@ import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 let firebaseConfig = {};
 
 // Check if we are running in an EAS build environment
-if (process.env.EAS_BUILD_PROFILE === 'production') {
+if (process.env.FIREBASE_API_KEY) {
   // We are in a production build, load from environment variables
   console.log("Using EAS Secrets for Firebase config");
   firebaseConfig = {
