@@ -6,13 +6,19 @@ import {
 import { getFirestore } from 'firebase/firestore';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
-// This object will hold our keys
 let firebaseConfig = {};
 
-// Use the built-in __DEV__ variable to check for production
 if (!__DEV__) {
-  // We are in a PRODUCTION build, load from environment variables
-  console.log("Using EAS Secrets for Firebase config");
+  // PRODUCTION BUILD
+  console.log("--- PRODUCTION BUILD DETECTED ---");
+  console.log("Checking for FIREBASE_API_KEY...");
+
+  if (!process.env.FIREBASE_API_KEY) {
+    // This will fail the build with a clear error
+    throw new Error("PRODUCTION BUILD FAILED: FIREBASE_API_KEY secret is missing or not loaded.");
+  }
+
+  console.log("Firebase secrets found. Initializing...");
   firebaseConfig = {
     apiKey: process.env.FIREBASE_API_KEY,
     authDomain: process.env.FIREBASE_AUTH_DOMAIN,
@@ -21,10 +27,10 @@ if (!__DEV__) {
     messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.FIREBASE_APP_ID,
   };
+
 } else {
-  // We are in LOCAL development.
-  // Load keys from our local, git-ignored file.
-  console.log("Using local config for Firebase");
+  // LOCAL DEVELOPMENT
+  console.log("--- LOCAL BUILD DETECTED ---");
   const localConfig = require('./firebaseConfig.local.js');
   firebaseConfig = localConfig.firebaseConfig;
 }
@@ -32,7 +38,6 @@ if (!__DEV__) {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Auth with persistence
 export const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage)
 });
