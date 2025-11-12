@@ -9,10 +9,9 @@ import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 // This object will hold our keys
 let firebaseConfig = {};
 
-// Check if we are running in an EAS build environment
-// by checking if the secret key exists.
-if (process.env.FIREBASE_API_KEY) {
-  // We are in a production build, load from environment variables
+// Use the built-in __DEV__ variable to check for production
+if (!__DEV__) {
+  // We are in a PRODUCTION build, load from environment variables
   console.log("Using EAS Secrets for Firebase config");
   firebaseConfig = {
     apiKey: process.env.FIREBASE_API_KEY,
@@ -23,7 +22,7 @@ if (process.env.FIREBASE_API_KEY) {
     appId: process.env.FIREBASE_APP_ID,
   };
 } else {
-  // We are not in a production build, so we must be in local development.
+  // We are in LOCAL development.
   // Load keys from our local, git-ignored file.
   console.log("Using local config for Firebase");
   const localConfig = require('./firebaseConfig.local.js');
