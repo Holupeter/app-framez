@@ -26,7 +26,7 @@ if (process.env.FIREBASE_API_KEY) {
   // We are not in a production build, so we must be in local development.
   // Load keys from our local, git-ignored file.
   console.log("Using local config for Firebase");
-  const localConfig = require('./firebaseConfig.local.js');
+  const localConfig = require('./firebaseConfig.local');
   firebaseConfig = localConfig.firebaseConfig;
 }
 
