@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Button, TouchableOpacity, Alert } from 'react-native';
-
-// Import Firebase auth
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebaseConfig'; // Import our auth export
+import { auth } from '../firebaseConfig';
+import { COLORS } from '../constants/colors'; // Import our colors
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // This function will handle the login logic
   const handleLogin = async () => {
     if (email === '' || password === '') {
       Alert.alert('Missing fields', 'Please enter both email and password.');
@@ -19,16 +17,9 @@ const LoginScreen = ({ navigation }) => {
 
     setLoading(true);
     try {
-      // This is the Firebase function to sign in a user
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      
-      // Just like with signup, 'onAuthStateChanged' in App.js
-      // will see this change and automatically navigate to the app.
-      console.log('User logged in!', userCredential.user.email);
-      
+      await signInWithEmailAndPassword(auth, email, password);
+      // onAuthStateChanged in App.js will handle navigation
     } catch (error) {
-      // Handle errors (e.g., wrong password, user not found)
-      console.error(error);
       Alert.alert('Login Error', 'Invalid email or password.');
     } finally {
       setLoading(false);
@@ -36,63 +27,111 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Framez</Text>
+    // KeyboardAvoidingView prevents the keyboard from covering the inputs
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
+      <Text style={styles.title}>Framez</Text>
       
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        keyboardType="email-address"
-      />
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor={COLORS.gray}
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+        />
+        
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor={COLORS.gray}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+      </View>
 
-      <Button title={loading ? 'Logging in...' : 'Login'} onPress={handleLogin} disabled={loading} />
-
-      <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-        <Text style={styles.switchText}>
-          Don't have an account? Sign Up
-        </Text>
+      <TouchableOpacity 
+        style={styles.button} 
+        onPress={handleLogin} 
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator color={COLORS.white} />
+        ) : (
+          <Text style={styles.buttonText}>Login</Text>
+        )}
       </TouchableOpacity>
-    </View>
+
+      <View style={styles.switchContainer}>
+        <Text style={styles.switchText}>Don't have an account? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+          <Text style={[styles.switchText, styles.switchLink]}>Sign Up</Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
-// Add the styles from SignupScreen.js
+// --- New Styles ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     padding: 20,
+    backgroundColor: COLORS.white,
   },
   title: {
-    fontSize: 24,
+    fontSize: 48,
     fontWeight: 'bold',
-    marginBottom: 20,
     textAlign: 'center',
+    marginBottom: 40,
+    color: COLORS.primary, // Our orange color
+  },
+  inputContainer: {
+    marginBottom: 20,
   },
   input: {
     width: '100%',
     height: 50,
+    backgroundColor: COLORS.light, // Off-white background
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: COLORS.border,
     borderRadius: 8,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     marginBottom: 15,
+    fontSize: 16,
+    color: COLORS.dark,
+  },
+  button: {
+    backgroundColor: COLORS.primary, // Our orange color
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    height: 50,
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: COLORS.white,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
   },
   switchText: {
-    marginTop: 20,
-    color: 'blue',
-    textAlign: 'center',
+    fontSize: 14,
+    color: COLORS.gray,
+  },
+  switchLink: {
+    color: COLORS.secondary, // Our calm blue
+    fontWeight: 'bold',
   },
 });
 
