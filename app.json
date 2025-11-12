@@ -31,6 +31,9 @@
         "projectId": "f507a498-0bdb-4b7b-b369-b971d1eb3843"
       }
     },
-    "owner": "orion-1234"
+    "owner": "orion-1234",
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
