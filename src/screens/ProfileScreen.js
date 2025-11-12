@@ -18,6 +18,7 @@ const ProfileScreen = () => {
 
   // Get the current user's info
   const user = auth.currentUser;
+  const currentUserId = user ? user.uid : null; // We already have the user
 
   // This useEffect will run once when the component mounts
   useEffect(() => {
@@ -88,7 +89,7 @@ const ProfileScreen = () => {
       
       <FlatList
         data={posts}
-        renderItem={({ item }) => <PostItem post={item} />}
+        renderItem={({ item }) => <PostItem post={item} currentUserId={currentUserId} />}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={<Text style={styles.postsTitle}>Your Posts</Text>}
         ListEmptyComponent={<Text style={styles.emptyText}>You haven't posted anything yet.</Text>}

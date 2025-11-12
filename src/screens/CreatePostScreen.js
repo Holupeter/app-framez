@@ -53,11 +53,13 @@ const CreatePostScreen = ({ navigation }) => {
       if (!user) throw new Error("No user logged in!");
 
       let imageUrl = null;
+      let imagePath = null;
 
       // 1. If an image was selected, upload it first
       if (image) {
         console.log("Uploading image...");
-        imageUrl = await uploadImageToStorage(image);
+        const { downloadURL, filePath } = await uploadImageToStorage(image);
+        imageUrl = downloadURL;
         console.log("Image uploaded:", imageUrl);
       }
 
@@ -68,6 +70,7 @@ const CreatePostScreen = ({ navigation }) => {
         authorId: user.uid,
         authorEmail: user.email,
         imageUrl: imageUrl, // Add the image URL (will be null if no image)
+        imagePath: imagePath,
       });
 
       console.log('Post saved!');

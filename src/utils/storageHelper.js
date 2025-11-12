@@ -27,7 +27,8 @@ export const uploadImageToStorage = async (uri) => {
     // This is good practice to keep things organized.
     const fileId = uuid.v4(); // Generates a random unique ID
     const storage = getStorage();
-    const storageRef = ref(storage, `posts/${user.uid}/${fileId}`);
+    const filePath = `posts/${user.uid}/${fileId}`;
+    const storageRef = ref(storage, filePath);
 
     // 3. Upload the file
     // 'uploadBytesResumable' is good for large files,
@@ -39,7 +40,8 @@ export const uploadImageToStorage = async (uri) => {
     // that anyone can use to view the image.
     const downloadURL = await getDownloadURL(uploadTask.ref);
 
-    return downloadURL;
+    //Return BOTH the URL and the path
+    return { downloadURL, filePath };
 
   } catch (error) {
     console.error("Error uploading image:", error);

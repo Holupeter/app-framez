@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { COLORS } from '../constants/colors';
+import { auth } from '../firebaseConfig';
 
 // Import our db
 import { db } from '../firebaseConfig';
@@ -13,6 +14,7 @@ import PostItem from '../components/PostItem';
 const FeedScreen = () => {
   const [loading, setLoading] = useState(true); // Start in loading state
   const [posts, setPosts] = useState([]);     // Store our array of posts
+  const currentUserId = auth.currentUser ? auth.currentUser.uid : null;
 
   // This useEffect will run once when the component mounts
   useEffect(() => {
@@ -61,7 +63,7 @@ const FeedScreen = () => {
     <View style={styles.container}>
       <FlatList
         data={posts} // The array of posts
-        renderItem={({ item }) => <PostItem post={item} />} // How to render each item
+        renderItem={({ item }) => <PostItem post={item} currentUserId={currentUserId} />} // How to render each item
         keyExtractor={(item) => item.id} // A unique key for each item
         ListEmptyComponent={<Text style={styles.emptyText}>No posts yet. Be the first!</Text>}
       />
