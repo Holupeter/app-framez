@@ -24,5 +24,15 @@
   },
   "submit": {
     "production": {}
+  },
+  "hooks": {
+    "build": [
+      {
+        "file": "eas-hooks/pre-build.sh",
+        "hooks": {
+          "pre-build-hook": "env"
+        }
+      }
+    ]
   }
 }
