@@ -71,7 +71,7 @@ const PostItem = ({ post, currentUserId }) => {
         {/* Only show the delete button if isAuthor is true */}
         {isAuthor && (
           <TouchableOpacity onPress={handleDelete} style={styles.deleteButton}>
-            <Ionicons name="trash-outline" size={24} color={COLORS.danger} />
+            <Ionicons name="trash-outline" size={24} color={COLORS.primaryLight} />
           </TouchableOpacity>
         )}
       </View>
