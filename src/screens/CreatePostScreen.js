@@ -1,47 +1,80 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Button, Alert, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
+import * as ImagePicker from 'expo-image-picker'; // Import image picker
+
+// Import our new upload function
+import { uploadImageToStorage } from '../utils/storageHelper'; 
 
 // Import our db and auth from Firebase
 import { db, auth } from '../firebaseConfig'; 
-
-// Import Firestore functions
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'; 
 
 const CreatePostScreen = ({ navigation }) => {
   const [postText, setPostText] = useState('');
+  const [image, setImage] = useState(null); // To store the selected image URI
   const [loading, setLoading] = useState(false);
 
-  // This function handles saving the post to Firestore
+  // --- Function to pick an image ---
+  const pickImage = async () => {
+    // Request permission to access the media library
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permissionResult.granted === false) {
+      Alert.alert("Permission required", "You must allow access to your photos to post an image.");
+      return;
+    }
+
+    // Launch the image picker
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images, // Only allow images
+      allowsEditing: true, // Allow user to crop/edit
+      aspect: [4, 3],      // Enforce an aspect ratio
+      quality: 0.7,        // Compress image to 70% quality
+    });
+
+    if (!result.canceled) {
+      // The user picked an image. 'result.assets[0].uri' has the local file path.
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  // --- Function to handle the post ---
   const handlePost = async () => {
-    if (postText.trim() === '') {
-      Alert.alert('Empty Post', 'Please write something to post.');
+    // A user must write text OR add an image
+    if (postText.trim() === '' && !image) {
+      Alert.alert('Empty Post', 'Please write something or add an image.');
       return;
     }
 
     setLoading(true);
 
     try {
-      const user = auth.currentUser; // Get the currently logged-in user
-      if (!user) {
-        throw new Error("No user logged in!");
+      const user = auth.currentUser;
+      if (!user) throw new Error("No user logged in!");
+
+      let imageUrl = null;
+
+      // 1. If an image was selected, upload it first
+      if (image) {
+        console.log("Uploading image...");
+        imageUrl = await uploadImageToStorage(image);
+        console.log("Image uploaded:", imageUrl);
       }
 
-      // 'posts' is the name of our collection in Firestore
-      // addDoc will automatically create a new document with a unique ID
-      const docRef = await addDoc(collection(db, 'posts'), {
+      // 2. Now, add the post to Firestore, including the new imageUrl
+      await addDoc(collection(db, 'posts'), {
         text: postText.trim(),
-        createdAt: serverTimestamp(), // Get a server-generated timestamp
-        authorId: user.uid,           // Save the user's unique ID
-        authorEmail: user.email,      // Save the user's email (for easy display)
-        // We will add imageUrl here in a later step
+        createdAt: serverTimestamp(),
+        authorId: user.uid,
+        authorEmail: user.email,
+        imageUrl: imageUrl, // Add the image URL (will be null if no image)
       });
 
-      console.log('Post saved with ID: ', docRef.id);
+      console.log('Post saved!');
       
       setLoading(false);
-      setPostText(''); // Clear the input field
+      setPostText('');
+      setImage(null);
       
-      // Navigate back to the Feed to see the new post
       navigation.navigate('Feed'); 
 
     } catch (error) {
@@ -60,9 +93,24 @@ const CreatePostScreen = ({ navigation }) => {
         placeholder="Write your post here..."
         value={postText}
         onChangeText={setPostText}
-        multiline // Allows multiple lines of text
-        numberOfLines={6}
+        multiline
+        numberOfLines={4} // Shorten it a bit
       />
+
+      {/* --- Image Picker Button --- */}
+      <TouchableOpacity style={styles.imageButton} onPress={pickImage}>
+        <Text style={styles.imageButtonText}>Pick an Image</Text>
+      </TouchableOpacity>
+
+      {/* --- Show the selected image preview --- */}
+      {image && (
+        <View style={styles.imagePreviewContainer}>
+          <Image source={{ uri: image }} style={styles.imagePreview} />
+          <TouchableOpacity style={styles.removeImageButton} onPress={() => setImage(null)}>
+            <Text style={styles.removeImageText}>X</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {loading ? (
         <ActivityIndicator size="large" />
@@ -76,6 +124,7 @@ const CreatePostScreen = ({ navigation }) => {
   );
 };
 
+// --- Add new styles ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -89,16 +138,54 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    height: 150,
+    height: 120,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
     paddingHorizontal: 10,
-    paddingTop: 10, // Start text from the top
+    paddingTop: 10,
     marginBottom: 20,
     fontSize: 16,
-    textAlignVertical: 'top', // For Android
+    textAlignVertical: 'top',
   },
+  imageButton: {
+    backgroundColor: '#007AFF',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  imageButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  imagePreviewContainer: {
+    marginBottom: 20,
+    alignItems: 'center',
+    position: 'relative',
+  },
+  imagePreview: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    resizeMode: 'cover',
+  },
+  removeImageButton: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  removeImageText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  }
 });
 
 export default CreatePostScreen;
