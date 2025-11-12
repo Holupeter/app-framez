@@ -21,7 +21,8 @@
         "FIREBASE_APP_ID": "${secret.FIREBASE_APP_ID}"
       },
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "googleServicesFile": "${secret.GOOGLE_SERVICES_JSON}"
       }
     }
   },
