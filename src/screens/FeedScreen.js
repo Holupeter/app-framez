@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import { COLORS } from '../constants/colors';
 
 // Import our db
 import { db } from '../firebaseConfig';
@@ -71,18 +72,19 @@ const FeedScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9f9f9', // A slight off-white for the background
+    backgroundColor: COLORS.light, // Set the light gray background
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: COLORS.light, // Also here
   },
   emptyText: {
     textAlign: 'center',
     marginTop: 50,
     fontSize: 16,
-    color: '#888',
+    color: COLORS.gray,
   }
 });
 

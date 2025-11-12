@@ -1,5 +1,5 @@
 import React, { useState, useEffect }from 'react';
-import { View, Text, StyleSheet, Button, Alert, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, FlatList, ActivityIndicator } from 'react-native';
 
 // Import Firebase auth and db
 import { signOut } from 'firebase/auth';
@@ -10,6 +10,7 @@ import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestor
 
 // Import our reusable component
 import PostItem from '../components/PostItem';
+import { COLORS } from '../constants/colors';
 
 const ProfileScreen = () => {
   const [loading, setLoading] = useState(true);
@@ -80,7 +81,9 @@ const ProfileScreen = () => {
     <View style={styles.container}>
       <View style={styles.profileHeader}>
         <Text style={styles.emailText}>{user ? user.email : 'Not Logged In'}</Text>
-        <Button title="Log Out" onPress={handleLogout} color="red" />
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Text style={styles.logoutButtonText}>Log Out</Text>
+        </TouchableOpacity>
       </View>
       
       <FlatList
@@ -98,24 +101,26 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: COLORS.light, // Light background
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: COLORS.light,
   },
   profileHeader: {
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: COLORS.border,
     alignItems: 'center',
   },
   emailText: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
+    color: COLORS.dark,
+    marginBottom: 15,
   },
   postsTitle: {
     fontSize: 20,
@@ -123,15 +128,28 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 10,
     paddingHorizontal: 16,
+    color: COLORS.dark,
   },
   emptyText: {
     textAlign: 'center',
     marginTop: 30,
     fontSize: 16,
-    color: '#888',
+    color: COLORS.gray,
   },
   list: {
     flex: 1,
+  },
+  // --- We'll add a new logout button style ---
+  logoutButton: {
+    backgroundColor: COLORS.danger, // Red for logout
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  logoutButtonText: {
+    color: COLORS.white,
+    fontWeight: 'bold',
+    fontSize: 16,
   }
 });
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Button, Alert, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'; // Import image picker
+import { COLORS } from '../constants/colors';
 
 // Import our new upload function
 import { uploadImageToStorage } from '../utils/storageHelper'; 
@@ -115,10 +116,13 @@ const CreatePostScreen = ({ navigation }) => {
       {loading ? (
         <ActivityIndicator size="large" />
       ) : (
-        <Button 
-          title="Post" 
-          onPress={handlePost} 
-        />
+        <TouchableOpacity style={styles.button} onPress={handlePost} disabled={loading}>
+            {loading ? (
+                <ActivityIndicator color={COLORS.white} />
+            ) : (
+                <Text style={styles.buttonText}>Post</Text>
+            )}
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -129,35 +133,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
+    backgroundColor: COLORS.white,
   },
   input: {
     height: 120,
+    backgroundColor: COLORS.light,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: COLORS.border,
     borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingTop: 10,
+    paddingHorizontal: 15,
+    paddingTop: 15,
     marginBottom: 20,
     fontSize: 16,
+    color: COLORS.dark,
     textAlignVertical: 'top',
   },
   imageButton: {
-    backgroundColor: '#007AFF',
-    padding: 12,
+    backgroundColor: COLORS.secondary, // Our calm blue
+    padding: 15,
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 20,
   },
   imageButtonText: {
-    color: '#fff',
+    color: COLORS.white,
     fontWeight: 'bold',
+    fontSize: 16,
   },
   imagePreviewContainer: {
     marginBottom: 20,
@@ -169,11 +170,13 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 8,
     resizeMode: 'cover',
+    borderColor: COLORS.border,
+    borderWidth: 1,
   },
   removeImageButton: {
     position: 'absolute',
-    top: 5,
-    right: 5,
+    top: 10,
+    right: 10,
     backgroundColor: 'rgba(0,0,0,0.7)',
     borderRadius: 15,
     width: 30,
@@ -185,7 +188,21 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
-  }
+  },
+  // --- We'll reuse the button style from LoginScreen ---
+  button: {
+    backgroundColor: COLORS.primary, // Our orange color
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    height: 50,
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: COLORS.white,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 });
 
 export default CreatePostScreen;
