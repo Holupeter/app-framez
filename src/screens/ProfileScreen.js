@@ -1,5 +1,5 @@
-import React, { useState, useEffect }from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, FlatList, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect, useCallback }from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 
 // Import Firebase auth and db
 import { signOut } from 'firebase/auth';
@@ -15,6 +15,7 @@ import { COLORS } from '../constants/colors';
 const ProfileScreen = () => {
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState([]);
+  const [refreshing, setRefreshing] = useState(false); // refreshing state
 
   // Get the current user's info
   const user = auth.currentUser;
@@ -57,6 +58,15 @@ const ProfileScreen = () => {
 
   }, [user]); // Re-run this effect if the 'user' object ever changes
 
+    // --- This is our new onRefresh function ---
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 1000);
+    }, []);
+
+
   // Logout Handler
   const handleLogout = async () => {
     try {
@@ -94,6 +104,16 @@ const ProfileScreen = () => {
         ListHeaderComponent={<Text style={styles.postsTitle}>Your Posts</Text>}
         ListEmptyComponent={<Text style={styles.emptyText}>You haven't posted anything yet.</Text>}
         style={styles.list}
+
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[COLORS.primary]}
+            tintColor={COLORS.primary}
+          />
+        }
+
       />
     </View>
   );

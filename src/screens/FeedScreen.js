@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { COLORS } from '../constants/colors';
 import { auth } from '../firebaseConfig';
 
@@ -14,6 +14,7 @@ import PostItem from '../components/PostItem';
 const FeedScreen = () => {
   const [loading, setLoading] = useState(true); // Start in loading state
   const [posts, setPosts] = useState([]);     // Store our array of posts
+  const [refreshing, setRefreshing] = useState(false); // refreshing state
   const currentUserId = auth.currentUser ? auth.currentUser.uid : null;
 
   // This useEffect will run once when the component mounts
@@ -49,6 +50,16 @@ const FeedScreen = () => {
     
   }, []); // The empty array [] means this effect only runs on mount
 
+
+    // --- This is our new onRefresh function ---
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+     // Simulate a 1-second refresh for good UX
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 1000);
+    }, []); // Empty dependency array
+
   // Show a loading spinner while we fetch data
   if (loading) {
     return (
@@ -66,6 +77,16 @@ const FeedScreen = () => {
         renderItem={({ item }) => <PostItem post={item} currentUserId={currentUserId} />} // How to render each item
         keyExtractor={(item) => item.id} // A unique key for each item
         ListEmptyComponent={<Text style={styles.emptyText}>No posts yet. Be the first!</Text>}
+      
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[COLORS.primary]} // Set the spinner color to our orange
+            tintColor={COLORS.primary} // For iOS
+          />
+        }
+      
       />
     </View>
   );
