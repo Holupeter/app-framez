@@ -44,4 +44,3 @@ yarn-error.*
 src/firebaseConfig.local.js
 
 google-services.local.json
-google-services.local.json
