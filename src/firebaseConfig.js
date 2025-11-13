@@ -11,23 +11,22 @@ let firebaseConfig = {};
 if (!__DEV__) {
   // PRODUCTION BUILD
   console.log("--- PRODUCTION BUILD DETECTED ---");
-  console.log("Checking for FIREBASE_API_KEY...");
+  console.log("Checking for Firebase environment variables...");
 
-  if (!process.env.FIREBASE_API_KEY) {
+  if (!process.env.EXPO_PUBLIC_FIREBASE_API_KEY) {
     // This will fail the build with a clear error
     throw new Error("PRODUCTION BUILD FAILED: FIREBASE_API_KEY secret is missing or not loaded.");
   }
 
   console.log("Firebase secrets found. Initializing...");
-// Replace this with your actual Firebase config object from the Firebase console
-const firebaseConfig = {
-  apiKey: "AIzaSyD6PGWoVaj8NmdN9PSdhaUQ2i7C4xl5UwM",
-  authDomain: "framezapp-78fcd.firebaseapp.com",
-  projectId: "framezapp-78fcd",
-  storageBucket: "framezapp-78fcd.firebasestorage.app",
-  messagingSenderId: "28874798727",
-  appId: "1:28874798727:web:2721e4c75da2d2ca6bea22"
-};
+  firebaseConfig = {
+    apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID
+  };
 
 } else {
   // LOCAL DEVELOPMENT
