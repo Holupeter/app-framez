@@ -1,9 +1,0 @@
-{
-  "//": "This is a placeholder file. Do not commit this file to version control.",
-  "//": "Before building for a specific environment (e.g., local, production),",
-  "//": "replace this file with the appropriate environment-specific google-services.json file.",
-  "//": "For local development, you can copy google-services.local.json to google-services.json.",
-  "project_info": {
-    "project_id": "framezapp-78fcd"
-  }
-}
