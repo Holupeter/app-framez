@@ -19,8 +19,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.orion1234.Framez",
-      "googleServicesFile": "./google-services.json"
+      "package": "com.orion1234.Framez"
     },
     "web": {
       "favicon": "./assets/favicon.png"
