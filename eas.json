@@ -23,9 +23,7 @@
       },
       "android": {
         "buildType": "apk"
-      },
-        "preBuild": "echo $GOOGLE_SERVICES_JSON_CONTENT > ./google-services.json"
-    }
+      }
   },
   "submit": {
     "production": {}
