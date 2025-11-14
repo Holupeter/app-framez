@@ -43,3 +43,8 @@ yarn-error.*
 # Firebase config
 src/firebaseConfig.local.js
 
+# Sensitive config files
+google-services.json
+eas.json
+
+
